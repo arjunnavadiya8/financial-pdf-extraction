@@ -113,7 +113,7 @@ Create `.env` file in project root:
 
 ```env
 DATABASE_URL=mysql+pymysql://financeuser:SecurePassword123!@localhost:3306/financedb
-SECRET_KEY=your-secret-key-change-in-production
+SECRET_KEY=118965e0381c2aeba8ddeedab70333e9e193f97f4d7e94e2544f2b2e440d91c2
 UPLOAD_DIR=./uploads
 MAX_FILE_SIZE=10485760
 ALLOWED_EXTENSIONS=pdf

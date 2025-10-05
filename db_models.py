@@ -1,9 +1,10 @@
-
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey, Text, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from datetime import datetime
 import enum
+from sqlalchemy.dialects.mysql import VARCHAR
+import uuid
 
 Base = declarative_base()
 
@@ -50,21 +51,25 @@ class Transaction(Base):
     __tablename__ = 'transactions'
     
     id = Column(Integer, primary_key=True)
+    transaction_uid = Column(String(64), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))  # Unique string ID
     statement_id = Column(Integer, ForeignKey('bank_statements.id'), nullable=False)
     transaction_date = Column(DateTime, nullable=False)
     description = Column(Text, nullable=False)
-    debit_amount = Column(Float)
-    credit_amount = Column(Float)
-    balance = Column(Float)
-    transaction_type = Column(String(50))  # debit, credit, transfer, fee, etc.
+    amount = Column(Float, nullable=False)  # Unified amount field
+    type = Column(String(10), nullable=False)  # "Credit" or "Debit"
     category = Column(String(100))  # food, transport, salary, etc.
+    balance = Column(Float)
     merchant = Column(String(255))
     reference_number = Column(String(100))
     extracted_at = Column(DateTime, default=datetime.utcnow)
     confidence_score = Column(Float)  # ML confidence score
-    
+
     # Relationships
     statement = relationship("BankStatement", back_populates="transactions")
+
+    @property
+    def user_id(self):
+        return self.statement.user_id if self.statement else None
 
 class ExtractionLog(Base):
     __tablename__ = 'extraction_logs'
